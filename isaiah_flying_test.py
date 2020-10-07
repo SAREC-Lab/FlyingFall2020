@@ -1,6 +1,8 @@
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, time
 
+# Comments about use of functions
+
 #Setup option parsing to get connection string
 import argparse
 parser = argparse.ArgumentParser(description='Print out vehicle state information')

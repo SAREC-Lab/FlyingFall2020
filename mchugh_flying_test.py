@@ -1,12 +1,12 @@
 from dronekit import connect, VehicleMode, time
 #from __future__ import print_function
 import time
-from dronekit_sitl import SITL
+#from dronekit_sitl import SITL
 from dronekit import Vehicle, VehicleMode, connect, LocationGlobalRelative
 import math
-import json
-from websocket import create_connection
-from drone_model import Drone_Model
+#import json
+#from websocket import create_connection
+#from drone_model import Drone_Model
 import argparse
 
 parser = argparse.ArgumentParser(description='Print out vehicle state information')
@@ -50,8 +50,8 @@ print("Mode: %s" % vehicle.mode.name) # settable
 '''
 globals
 '''
-ws = create_connection("ws://localhost:8000")
-drone_model_object =  Drone_Model(1,0,0)
+#ws = create_connection("ws://localhost:8000")
+#drone_model_object =  Drone_Model(1,0,0)
 
 
 '''
@@ -89,8 +89,8 @@ def custom_sleep(drone_model, sleep_time):
     while(current_time<sleep_time):
         lat = vehicle.location.global_relative_frame.lat
         lon = vehicle.location.global_relative_frame.lon
-        drone_model.update_status(lat,lon)
-        ws.send(drone_model.toJSON())
+        #drone_model.update_status(lat,lon)
+        #ws.send(drone_model.toJSON())
         print('Current location is: {0},{1}'.format(lat,lon))
         time.sleep(1)
         current_time+=1
@@ -120,8 +120,8 @@ def arm_and_takeoff(aTargetAltitude):
     #   immediately).
     while vehicle.mode.name=="GUIDED":
         print(" Altitude: ", vehicle.location.global_relative_frame.alt)
-        drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
-        ws.send(drone_model_object.toJSON())
+        #drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+        #ws.send(drone_model_object.toJSON())
         # Break and return from function just below target altitude.
         if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
             print("Reached target altitude")
@@ -146,8 +146,8 @@ new_loc = LocationGlobalRelative(new_lat, new_lon, 10)
 vehicle.simple_goto(new_loc)
 while vehicle.mode.name=="GUIDED":
     print(" Location: ", vehicle.location.global_relative_frame)
-    drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
-    ws.send(drone_model_object.toJSON())
+    #drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+    #ws.send(drone_model_object.toJSON())
     # Break and return from function just below target altitude.
     if get_distance_meters(vehicle.location.global_relative_frame, new_loc) <= 1.5:
         print("Reached waypoint")
@@ -160,8 +160,8 @@ new_loc2 = LocationGlobalRelative(new_loc.lat, new_loc.lon, 15)
 vehicle.simple_goto(new_loc2)
 while vehicle.mode.name=="GUIDED":
     print(" Altitude: ", vehicle.location.global_relative_frame.alt)
-    drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
-    ws.send(drone_model_object.toJSON())
+    #drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+    #ws.send(drone_model_object.toJSON())
     # Break and return from function just below target altitude.
     if vehicle.location.global_relative_frame.alt >= 15 * 0.95:
         print("Reached target altitude")
@@ -175,8 +175,8 @@ new_loc3 = LocationGlobalRelative(new_lat, new_lon, 15)
 vehicle.simple_goto(new_loc3)
 while vehicle.mode.name=="GUIDED":
     print(" Location: ", vehicle.location.global_relative_frame)
-    drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
-    ws.send(drone_model_object.toJSON())
+    #drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+    #ws.send(drone_model_object.toJSON())
     # Break and return from function just below target altitude.
     if get_distance_meters(vehicle.location.global_relative_frame, new_loc3) <= 1.5:
         print("Reached waypoint")
@@ -191,8 +191,8 @@ new_loc4 = LocationGlobalRelative(home_lat, home_lon, 10)
 vehicle.simple_goto(new_loc4)
 while vehicle.mode.name=="GUIDED":
     print(" Location: ", vehicle.location.global_relative_frame)
-    drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
-    ws.send(drone_model_object.toJSON())
+    #drone_model_object.update_status(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+    #ws.send(drone_model_object.toJSON())
     # Break and return from function just below target altitude.
     if get_distance_meters(vehicle.location.global_relative_frame, new_loc4) <= 1.5:
         print("Reached waypoint")

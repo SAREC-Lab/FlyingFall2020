@@ -45,7 +45,7 @@ def arm_and_takeoff(aTargetAltitude):
 
     # Wait until the vehicle reaches a safe height before processing the goto
     #  (otherwise the command after Vehicle.simple_takeoff will execute immediately).
-    while True:
+    while vehicle.mode == "GUIDED":
         print(" Altitude: ", vehicle.location.global_relative_frame.alt)
         # Break and return from function just below target altitude.
         if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:

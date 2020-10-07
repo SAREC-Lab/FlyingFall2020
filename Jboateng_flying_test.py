@@ -82,9 +82,11 @@ def get_distance_meters(locationA, locationB):
     print "Distance (meters):", distance
     return distance
 
+#JCH Moved goto above while loop
 def goto_target(target_location):
+        vehicle.simple_goto(target_location)
 	while vehicle.mode.name == "GUIDED":
-		vehicle.simple_goto(target_location)
+		
 		remaining_distance = get_distance_meters(vehicle.location.global_frame, target_location)
 		
 		#x = vehicle.location.global_frame.lat

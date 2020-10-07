@@ -1,6 +1,8 @@
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, time
-import math
+
+# Import math
+from math import sin, cos, atan2, radians, sqrt, pi
 
 #Setup option parsing to get connection string
 import argparse
@@ -72,62 +74,54 @@ arm_and_takeoff(10)
 # SANITY CHECK that you don't go farther than 20 meters from your starting waypoint.
 # I'm somehow against anyone trying to fly to Australia during our flight tests!
 
-def newLoc_meters(loc, ndist, edist):
-    R = 6378137.0 #Radius of earth
-    addLat = ndist/R
-    addLon = edist/(R*math.cos(math.pi*loc.lat/180))
-    newLat = loc.lat + (addLat * 180/math.pi)
-    newLon = loc.lon + (addLon * 180/math.pi)
-    return LocationGlobalRelative(newLat, newLon, loc.alt)
+def Location:
+    def __init__(self, lat, lon, alt):
+        self.lat = lat
+        self.lon = lon
+        self.alt = alt
 
-def goto(ndist, edist):
-    targetLoc = newLoc_meters(vehicle.location.global_relative_frame, ndist, edist)
-    vehicle.simple_goto(targetLoc)
-    return targetLoc
+def get_distance_meters(locationA, locationB):
+    # approximate radius of earth in km
+    R = 6373.0
 
-def get_distance_meters(loc1, loc2):
-    diffLat = loc2.lat - loc1.lat
-    diffLon = loc2.lon - loc2.lon
-    return math.sqrt((diffLat*diffLat) + (diffLon*diffLon)) * 1.1131915e5
+    lat1 = radians(locationA.lat)
+    lon1 = radians(locationA.lon)
+    lat2 = radians(locationB.lat)
+    lon2 = radians(locationB.lon)
 
-def travel(targetLoc, currLoc):
-    while vehicle.mode.name == 'GUIDED':
-        if get_distance_meters(targetLoc, currLoc) < 1:
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    distance = (R * c) * 1000
+
+    # print("Distance (meters):", distance)
+    return distance
+
+def my_goto_function(target):
+    print('Heading to new waypoint: {0},{1},{2}'.format(target.lat,target.lon,target.alt))
+    vehicle.simple_goto(target)
+    while vehicle.mode == 'GUIDED':
+        lat = vehicle.location.global_relative_frame.lat
+        lon = vehicle.location.global_relative_frame.lon
+        alt = vehicle.location.global_relative_frame.alt
+        print('Current location: {0},{1},{2}'.format(lat,lon,alt))
+        if get_distance_meters(vehicle.location.global_relative_frame, target) <= 2:
+            print('Reached waypoint')
             break
-        time.sleep(1)
-    currLat = currLoc.lat
-    currLon = currLoc.lon
-    print("   Current Lat: " + str(currLat) + ", Lon: " + str(currLon))
 
-print("Set default/target airspeed to 3")
-vehicle.airspeed=3
+home = vehicle.location.global_relative_frame
+waypoints = [
+        Location(home.lat + 0.0001, home.lon - 0.0001, home.alt),
+        Location(home.lat, home.lon, home.alt),
+        Location(home.lat, home.lon + 0.00015, home.alt),
+        Location(home.lat, home.lon, home.alt),
+    ]
 
-initLoc = vehicle.location.global_relative_frame
-
-print("Hover for 5 sec")
-time.sleep(5)
-currLat = vehicle.location.global_relative_frame.lat
-currLon = vehicle.location.global_relative_frame.lon
-print("  Current Lat: " + str(currLat) + ", Lon: " + str(currLon))
-
-print("Fly NW for 20 meters")
-targetLoc = goto(20/math.sqrt(2), -20/math.sqrt(2)) #gives diagonal NW of 20m
-travel(targetLoc, vehicle.location.global_relative_frame)
-
-print("Increase altitude to 15 meters")
-point = LocationGlobalRelative(vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon, 15)
-vehicle.simple_goto(point)
-travel(point, vehicle.location.global_relative_frame)
-
-print("Fly East for 20 meters")
-targetLoc = goto(0, 20) # straight E 20 m
-travel(targetLoc, vehicle.locaiton.global_relative_frame)
-
-print("Fly back to original position")
-point = LocationGlobalRelative(initLoc.lat, initLoc.lon, 15)
-vehicle.simple_goto(point)
-travel(point, vehicle.location.global_relative_frame)
-
+while waypoints and vehicle.mode == 'GUIDED':
+    my_goto_function(waypoints.pop(0))
 
 ####################################
 # Add this at the end
